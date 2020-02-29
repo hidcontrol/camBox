@@ -1,0 +1,4 @@
+source/*
+camunda-bpm-swagger-json-7.8.0.jar
+swagger-codegen-cli-2.2.3.jar
+swagger.json
