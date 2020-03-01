@@ -1,0 +1,2 @@
+Демонстрация применения механизма логирования logback (infrastructure/camunda/conf/logback/logback.xml)  заложенного в camBox.
+Применяется адаптивный json формат записей в лог (Спасибо https://github.com/DigitalState/camunda-json-logging).

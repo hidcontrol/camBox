@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" id="Definitions_1czlna7" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="3.5.0">
+  <bpmn:process id="logstash-logback-encoder-js" name="logstash-logback-encoder-js&#10;" isExecutable="true">
+    <bpmn:startEvent id="StartEvent_1">
+      <bpmn:outgoing>SequenceFlow_0pj7or2</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:endEvent id="EndEvent_09x9qk3">
+      <bpmn:incoming>SequenceFlow_028v2lg</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="SequenceFlow_0pj7or2" sourceRef="StartEvent_1" targetRef="Task_0j12y2g" />
+    <bpmn:sequenceFlow id="SequenceFlow_0ohwokx" sourceRef="Task_0j12y2g" targetRef="Task_0cm1boj" />
+    <bpmn:scriptTask id="Task_0j12y2g" name="Сформировать лог" scriptFormat="javascript">
+      <bpmn:incoming>SequenceFlow_0pj7or2</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_0ohwokx</bpmn:outgoing>
+      <bpmn:script>var log = org.slf4j.LoggerFactory.getLogger('vendor.arguments');
+var sa = Java.type("net.logstash.logback.argument.StructuredArguments");
+
+var notify = {};
+notify.kwargs = {
+  "param": {
+    "message": "Message",
+    "notifications": {
+      "body": [
+        {
+          "level": "info",
+          "text": "Создано назначение,которое необходимо срочно выполнить"
+        }
+      ],
+      "groups": [
+        "group1"
+      ],
+      "title": "Уведомление",
+      "users": [
+        "user1"
+      ]
+    },
+    "parent_tid": "parent_task_id",
+    "payload_type": "none",
+    "status": "success",
+    "tid": execution.getId()
+  }
+};
+
+/*
+ * Add "name":"value" to the JSON output,
+ * but only add the value to the formatted message.
+ *
+ * The formatted message will be `log message value`
+ */
+log.info("log message {}", sa.value("name", "value"));
+
+/*
+ * Add "name":"value" to the JSON output,
+ * and add name=value to the formatted message.
+ *
+ * The formatted message will be `log message name=value`
+ */
+log.info("log message {}", sa.keyValue("name", "value"));
+
+/*
+ * Add "name":"value" ONLY to the JSON output.
+ *
+ * Since there is no parameter for the argument,
+ * the formatted message will NOT contain the key/value.
+ *
+ * If this looks funny to you or to static analyzers,
+ * consider using Markers instead.
+ */
+log.info("log message", sa.keyValue("name", "value"));
+
+/*
+ * Add multiple key value pairs to both JSON and formatted message
+ */
+log.info("log message {} {}", sa.keyValue("name1", "value1"), sa.keyValue("name2", "value2"));
+
+/*
+ * Add "name":"value" to the JSON output and
+ * add name=[value] to the formatted message using a custom format.
+ */
+log.info("log message {}", sa.keyValue("name", "value", "{0}=[{1}]"));
+
+/*
+ * In the JSON output, values will be serialized by Jackson's ObjectMapper.
+ * In the formatted message, values will follow the same behavior as logback
+ * (formatting of an array or if not an array `toString()` is called).
+ *
+ * Add "foo":{...} to the JSON output and add `foo.toString()` to the formatted message:
+ *
+ * The formatted message will be `log message &lt;result of foo.toString()&gt;`
+ */
+log.info("log message {}", sa.value("notify-key", notify));
+
+/*
+ * Add "name1":"value1","name2":"value2" to the JSON output by using a Map,
+ * and add `myMap.toString()` to the formatted message.
+ *
+ * Note the values can be any object that can be serialized by Jackson's ObjectMapper
+ * (e.g. other Maps, JsonNodes, numbers, arrays, etc)
+ */
+//Map myMap = new HashMap();
+//myMap.put("name1", "value1");
+//myMap.put("name2", "value2");
+log.info("log message {}", sa.entries(notify));
+//S(JSON.stringify(notify))
+/*
+ * Add "array":[1,2,3] to the JSON output,
+ * and array=[1,2,3] to the formatted message.
+ */
+var cars = ["Saab", "Volvo", "BMW"];
+log.info("log message {}", sa.array("array1", 1, 2, 3));
+log.info("log message {}", sa.array("array2", cars));</bpmn:script>
+    </bpmn:scriptTask>
+    <bpmn:sequenceFlow id="SequenceFlow_028v2lg" sourceRef="Task_0cm1boj" targetRef="EndEvent_09x9qk3" />
+    <bpmn:userTask id="Task_0cm1boj" name="Контроль" camunda:assignee="demo">
+      <bpmn:incoming>SequenceFlow_0ohwokx</bpmn:incoming>
+      <bpmn:outgoing>SequenceFlow_028v2lg</bpmn:outgoing>
+    </bpmn:userTask>
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="logstash-logback-encoder-js">
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="179" y="103" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndEvent_09x9qk3_di" bpmnElement="EndEvent_09x9qk3">
+        <dc:Bounds x="702" y="103" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_0pj7or2_di" bpmnElement="SequenceFlow_0pj7or2">
+        <di:waypoint x="215" y="121" />
+        <di:waypoint x="283" y="121" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="SequenceFlow_0ohwokx_di" bpmnElement="SequenceFlow_0ohwokx">
+        <di:waypoint x="383" y="121" />
+        <di:waypoint x="500" y="121" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="ScriptTask_1rhbzoh_di" bpmnElement="Task_0j12y2g">
+        <dc:Bounds x="283" y="81" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="SequenceFlow_028v2lg_di" bpmnElement="SequenceFlow_028v2lg">
+        <di:waypoint x="600" y="121" />
+        <di:waypoint x="702" y="121" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="UserTask_16ymq4d_di" bpmnElement="Task_0cm1boj">
+        <dc:Bounds x="500" y="81" width="100" height="80" />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
